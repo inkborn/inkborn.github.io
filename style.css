@@ -125,6 +125,15 @@ h2{font-family:"Special Elite","Courier New",monospace;font-weight:400;font-size
 .bench{list-style:none;padding:0;margin:6px 0 0;display:grid;gap:10px;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:14px}
 .bench li{border-left:2px solid var(--blood);padding:2px 0 2px 12px;color:#cfc3a5}
 .bench b{color:#ffd98a}
+/* watch */
+.video-row{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr);gap:26px;align-items:center;margin:26px 0}
+.video-row.flip{grid-template-columns:minmax(0,.75fr) minmax(0,1.25fr)}
+.video-row.flip>.video-note{order:-1}
+.video-frame{background:#050403;border:1px solid #3a332a;border-radius:10px;overflow:hidden;box-shadow:8px 8px 0 #00000088}
+.video-frame iframe{display:block;width:100%;aspect-ratio:16/9;border:0}
+.video-note .tape{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12px;color:#c98f8f;letter-spacing:1px;margin:0}
+.video-note h3{font-family:"Special Elite","Courier New",monospace;font-weight:400;font-size:25px;margin:6px 0 8px}
+.video-note p{color:#cfc3a5}
 /* bands */
 .band{position:relative;overflow:hidden;min-height:44vh;display:flex;align-items:flex-end;border-top:1px solid #000;border-bottom:1px solid #000}
 .band::before{content:"";position:absolute;inset:0;background-size:cover;background-position:center;filter:brightness(.48) sepia(.25);animation:bandzoom 26s ease-in-out infinite alternate}
@@ -192,7 +201,9 @@ footer a{color:#b9ad93}
 #lightbox .x{font-family:"Special Elite","Courier New",monospace;color:#8a1c1c;cursor:pointer;white-space:nowrap}
 @media (prefers-reduced-motion:reduce){.js .rv{opacity:1}}
 @media(max-width:900px){
-.hero-inner,.cols,.grid-3,.cols-3-small,.lex,.gallery{grid-template-columns:1fr}
+.hero-inner,.cols,.grid-3,.cols-3-small,.lex,.gallery,.video-row{grid-template-columns:1fr}
+.video-row.flip{grid-template-columns:1fr}
+.video-row.flip>.video-note{order:0}
 .nav nav{display:none}
 #menuBtn{display:block;margin-left:auto}
 .game-log{height:270px}.hero h1{font-size:72px}
