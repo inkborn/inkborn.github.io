@@ -52,10 +52,28 @@ function say(html, cls='') {
   div.className = cls; div.innerHTML = html;
   log.appendChild(div); log.scrollTop = log.scrollHeight;
 }
+// boot text types itself out, then hands over control
 function init() {
-  say('INKBORN KOMPLEX // ROOM-07 — connection established.', 'sys-msg');
-  say('You wake up in a cold room. Your head throbs. There is a <b>door</b> [locked], a flickering ink <b>terminal</b>, a dim <b>lamp</b>.', '');
-  say('Hint: <b>read terminal</b> — you will rewrite reality in ink from there.', 'ok');
+  const lines = [
+    ['INKBORN KOMPLEX // ROOM-07 — connection established.', 'sys-msg'],
+    ['You wake up in a cold room. Your head throbs. There is a <b>door</b> [locked], a flickering ink <b>terminal</b>, a dim <b>lamp</b>.', ''],
+    ['Hint: <b>read terminal</b> — you will rewrite reality in ink from there.', 'ok']
+  ];
+  let li = 0;
+  const typeLine = (html, cls, done) => {
+    const plain = html.replace(/<[^>]*>/g, '');
+    const div = document.createElement('div');
+    div.className = cls;
+    log.appendChild(div);
+    let i = 0;
+    const iv = setInterval(() => {
+      div.textContent = plain.slice(0, ++i);
+      log.scrollTop = log.scrollHeight;
+      if (i >= plain.length) { clearInterval(iv); div.innerHTML = html; log.scrollTop = log.scrollHeight; done(); }
+    }, 9);
+  };
+  const next = () => { if (li < lines.length) { const [h, c] = lines[li++]; typeLine(h, c, next); } };
+  next();
 }
 function cmd(raw) {
   const t = ' ' + raw.toLowerCase() + ' ';
@@ -255,6 +273,8 @@ document.querySelectorAll('.gallery img,.polaroid img,.hero-img').forEach(img =>
     const dw = img.naturalWidth * s, dh = img.naturalHeight * s;
     c.drawImage(img, (cv.width - dw) / 2, (cv.height - dh) / 2, dw, dh);
     cv.dataset.src = img.src;
+    cv.setAttribute('role', 'img');
+    cv.setAttribute('aria-label', img.alt || 'game screenshot');
     img.replaceWith(cv);
   };
   if (img.complete && img.naturalWidth) paint();
@@ -273,6 +293,16 @@ boxes.forEach(b => {
   });
 });
 paintCount();
+
+// band captions float against the scroll
+addEventListener('scroll', () => {
+  document.querySelectorAll('.band p').forEach(p => {
+    const b = p.closest('.band').getBoundingClientRect();
+    const k = (b.top + b.height / 2 - innerHeight / 2) / innerHeight;
+    p.style.transform = 'translateY(' + (-k * 36).toFixed(1) + 'px)';
+  });
+}, {passive: true});
+
 const lb = document.getElementById('lightbox');
 if (lb) {
   const lbImg = lb.querySelector('img'), lbCap = lb.querySelector('.cap');

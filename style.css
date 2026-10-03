@@ -41,7 +41,7 @@ section{scroll-margin-top:64px}
 .hero-left>*:nth-child(7){animation-delay:.44s}
 @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 .seal{transform:rotate(10deg)}
-@keyframes bob{0%,100%{transform:rotate(10deg) translateY(0)}50%{transform:rotate(7deg) translateY(-5px)}}
+.seal{transform:rotate(10deg)}
 .stamp-btn{position:relative;overflow:hidden}
 .stamp-btn::after{content:"";position:absolute;top:0;left:-70%;width:45%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.28),transparent);transform:skewX(-20deg);transition:left .55s ease}
 .stamp-btn:hover::after{left:130%}
@@ -136,7 +136,7 @@ h2{font-family:"Special Elite","Courier New",monospace;font-weight:400;font-size
 .band p{position:relative;z-index:1;width:100%;max-width:1120px;margin:0 auto;padding:0 22px 36px;font-family:"Caveat",cursive;font-size:clamp(24px,4vw,38px);color:#e8dcc0;text-shadow:0 2px 14px #000}
 .band .pg{color:#c98f8f;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.6em;vertical-align:middle;margin-right:10px}
 .gallery figure canvas,.polaroid canvas,.cover-fig canvas{width:100%;display:block;filter:sepia(.22) contrast(1.03)}
-.gallery figure canvas{height:168px}
+.gallery figure canvas{height:190px}
 .polaroid canvas{height:340px}
 .cover-fig canvas{height:300px}
 .gallery figure,.polaroid,.cover-fig{-webkit-touch-callout:none}
@@ -182,7 +182,7 @@ footer{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;paddin
 footer a{color:#b9ad93}
 /* reveal */
 .js .rv{opacity:0}
-.js .rv.in{opacity:1;transition:opacity .6s ease}
+.js .rv.in{opacity:1;transition:opacity .35s ease}
 /* lightbox */
 #lightbox{position:fixed;inset:0;z-index:99;display:none;align-items:center;justify-content:center;background:rgba(5,4,3,.93);padding:24px}
 #lightbox.open{display:flex}
@@ -197,4 +197,5 @@ footer a{color:#b9ad93}
 #menuBtn{display:block;margin-left:auto}
 .game-log{height:270px}.hero h1{font-size:72px}
 .polaroid img,.polaroid canvas,.hero-img,.cover-fig canvas{height:240px}
+#gameInput,#miniForm input{font-size:16px}
 }
