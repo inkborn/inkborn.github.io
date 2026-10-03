@@ -214,7 +214,7 @@ if (prog) addEventListener('scroll', () => {
   prog.style.width = (k > 0 ? (scrollY / k * 100) : 0) + '%';
 }, {passive: true});
 
-const RV = '.note-card,.gallery figure,.polaroid,.terminal-big,.cover-fig,.tally,details.faq,.band p';
+const RV = '.note-card,.gallery figure,.polaroid,.terminal-big,.cover-fig,.tally,details.faq,.band p,.check li,.bench li';
 const revealCheck = () => document.querySelectorAll('.rv:not(.in)').forEach(el => {
   const b = el.getBoundingClientRect();
   if (b.top < innerHeight * .92 && b.bottom > 0) el.classList.add('in');
@@ -240,8 +240,9 @@ document.querySelectorAll('.gallery img,.polaroid img,.hero-img,#lightbox img').
 document.addEventListener('contextmenu', e => { if (e.target.closest && e.target.closest('img,canvas')) e.preventDefault(); });
 document.addEventListener('dragstart', e => { if (e.target.closest && e.target.closest('img')) e.preventDefault(); });
 
-// render photos to canvas: no save-as, no drag-out, no lens-on-long-press
+// render photos to canvas (stills only — gifs keep playing)
 document.querySelectorAll('.gallery img,.polaroid img,.hero-img').forEach(img => {
+  if (/\.gif(\?|#|$)/i.test(img.src)) return;
   const paint = () => {
     if (!img.naturalWidth || !img.isConnected) return;
     const h = Math.round(parseFloat(getComputedStyle(img).height)) || 200;
@@ -259,7 +260,18 @@ document.querySelectorAll('.gallery img,.polaroid img,.hero-img').forEach(img =>
   else img.addEventListener('load', paint);
 });
 
-// gallery lightbox
+// 100% checklist with memory
+const boxes = [...document.querySelectorAll('.check input')];
+const counter = document.getElementById('checkCount');
+const paintCount = () => { if (counter) counter.textContent = boxes.filter(b => b.checked).length + '/' + boxes.length + ' inked'; };
+boxes.forEach(b => {
+  try { b.checked = localStorage.getItem('inkborn-' + b.dataset.k) === '1'; } catch (e) {}
+  b.addEventListener('change', () => {
+    try { localStorage.setItem('inkborn-' + b.dataset.k, b.checked ? '1' : '0'); } catch (e) {}
+    paintCount();
+  });
+});
+paintCount();
 const lb = document.getElementById('lightbox');
 if (lb) {
   const lbImg = lb.querySelector('img'), lbCap = lb.querySelector('.cap');
