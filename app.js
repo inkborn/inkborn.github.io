@@ -1,7 +1,19 @@
 // INKBORN visitor's notebook - interactions
 const $ = s => document.querySelector(s);
 
-// mobile menu
+// hashless anchor glide: same smooth scroll, no # in the address bar
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const id = a.getAttribute('href').slice(1);
+    const t = id ? document.getElementById(id) : null;
+    if (!id || t || id === 'top' && document.querySelector('main')) {
+      e.preventDefault();
+      (t || document.querySelector('main')).scrollIntoView({behavior: 'smooth'});
+      history.replaceState(null, '', location.pathname + location.search);
+    }
+  });
+});
+if (location.hash) history.replaceState(null, '', location.pathname + location.search);
 const menuBtn = $('#menuBtn'), mobileMenu = $('#mobileMenu');
 menuBtn.onclick = () => {
   mobileMenu.style.display = mobileMenu.style.display === 'flex' ? 'none' : 'flex';
