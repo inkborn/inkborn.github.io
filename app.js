@@ -130,6 +130,7 @@ function cmd(raw) {
     say('You pick up a small <b>battery</b>. The terminal glows a bit brighter. (Players collect batteries for 100%!)', 'ok');
     return;
   }
+  if (has('fate', 'destiny')) { say('The terminal considers this. "FATE: [draft — unsaved]." Write smaller words first.', 'ok'); return; }
   if (has('hello', 'hi', 'hey')) { say('Inkborn whispers: "...hello..."', 'sys-msg'); return; }
   say('Inkborn does not understand: "' + raw + '"? Type <b>help</b>.', 'sys-msg');
 }
