@@ -15,14 +15,14 @@ mobileMenu.querySelectorAll('a').forEach(a => a.onclick = () => mobileMenu.style
   el.textContent = (el.textContent + el.textContent).slice(0, 640);
   let x = 0, last = performance.now();
   const speed = 45;
-  (function frame(now) {
+  setInterval(() => {
+    const now = performance.now();
     const dt = Math.min(100, now - last); last = now;
     const half = el.scrollWidth / 2;
     x -= speed * dt / 1000;
     if (half > 0 && x <= -half) x += half;
     el.style.transform = 'translateX(' + x + 'px)';
-    requestAnimationFrame(frame);
-  })(last);
+  }, 50);
 })();
 
 // mini hero terminal
