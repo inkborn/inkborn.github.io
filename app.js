@@ -8,9 +8,22 @@ menuBtn.onclick = () => {
 };
 mobileMenu.querySelectorAll('a').forEach(a => a.onclick = () => mobileMenu.style.display = 'none');
 
-// ticker loop points
-const mq = $('#marquee');
-mq.textContent = (mq.textContent + mq.textContent).slice(0, 420);
+// ticker: JS-driven marquee, moves no matter the OS motion setting
+(function ticker() {
+  const el = document.getElementById('marquee');
+  if (!el) return;
+  el.textContent = (el.textContent + el.textContent).slice(0, 640);
+  let x = 0, last = performance.now();
+  const speed = 45;
+  (function frame(now) {
+    const dt = Math.min(100, now - last); last = now;
+    const half = el.scrollWidth / 2;
+    x -= speed * dt / 1000;
+    if (half > 0 && x <= -half) x += half;
+    el.style.transform = 'translateX(' + x + 'px)';
+    requestAnimationFrame(frame);
+  })(last);
+})();
 
 // mini hero terminal
 const miniForm = $('#miniForm'), miniInput = $('#miniInput'), miniScene = $('#miniScene');
@@ -44,7 +57,6 @@ function init() {
   say('You wake up in a cold room. Your head throbs. There is a <b>door</b> [locked], a flickering ink <b>terminal</b>, a dim <b>lamp</b>.', '');
   say('Hint: <b>read terminal</b> — you will rewrite reality in ink from there.', 'ok');
 }
-const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 function cmd(raw) {
   const t = ' ' + raw.toLowerCase() + ' ';
   say('&gt; ' + raw, 'echo');
@@ -127,7 +139,6 @@ init();
 
 // slow embers over the hero (calm drift, no flicker)
 (function embers() {
-  if (reducedMotion) return;
   const cv = document.getElementById('embers');
   const hero = document.querySelector('.hero');
   if (!cv || !hero) return;
@@ -165,7 +176,7 @@ init();
 
 // faint lamp-light following the cursor across the hero (fine pointers only)
 (function glow() {
-  if (reducedMotion || !matchMedia('(hover: hover)').matches) return;
+  if (!matchMedia('(hover: hover)').matches) return;
   const hero = document.querySelector('.hero'), lamp = document.querySelector('.hero-glow');
   if (!hero || !lamp) return;
   hero.addEventListener('mousemove', e => {
@@ -178,7 +189,6 @@ init();
 (function tally() {
   const nums = [...document.querySelectorAll('.tally [data-n]')];
   if (!nums.length) return;
-  if (reducedMotion) return;
   let done = false;
   const run = () => {
     if (done) return;
