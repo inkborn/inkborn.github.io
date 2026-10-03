@@ -145,6 +145,32 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(revealChec
 revealCheck();
 setTimeout(revealCheck, 600);
 
+// image protection: no right-click save, no drag-out (images only, page stays usable)
+document.querySelectorAll('.gallery img,.polaroid img,.hero-img,#lightbox img').forEach(i => {
+  i.setAttribute('draggable', 'false');
+});
+document.addEventListener('contextmenu', e => { if (e.target.closest && e.target.closest('img,canvas')) e.preventDefault(); });
+document.addEventListener('dragstart', e => { if (e.target.closest && e.target.closest('img')) e.preventDefault(); });
+
+// render photos to canvas: no save-as, no drag-out, no lens-on-long-press
+document.querySelectorAll('.gallery img,.polaroid img,.hero-img').forEach(img => {
+  const paint = () => {
+    if (!img.naturalWidth || !img.isConnected) return;
+    const h = Math.round(parseFloat(getComputedStyle(img).height)) || 200;
+    const w = Math.max(2, Math.round(img.getBoundingClientRect().width)) || Math.round(h * 16 / 9);
+    const cv = document.createElement('canvas');
+    cv.width = Math.min(w * 2, 1600); cv.height = Math.max(2, Math.round(cv.width * h / w));
+    const c = cv.getContext('2d');
+    const s = Math.max(cv.width / img.naturalWidth, cv.height / img.naturalHeight);
+    const dw = img.naturalWidth * s, dh = img.naturalHeight * s;
+    c.drawImage(img, (cv.width - dw) / 2, (cv.height - dh) / 2, dw, dh);
+    cv.dataset.src = img.src;
+    img.replaceWith(cv);
+  };
+  if (img.complete && img.naturalWidth) paint();
+  else img.addEventListener('load', paint);
+});
+
 // gallery lightbox
 const lb = document.getElementById('lightbox');
 if (lb) {
@@ -152,8 +178,9 @@ if (lb) {
   document.querySelectorAll('.gallery figure').forEach(f => {
     f.style.cursor = 'zoom-in';
     f.addEventListener('click', () => {
-      const img = f.querySelector('img'), cap = f.querySelector('figcaption');
-      lbImg.src = img.src;
+      const cap = f.querySelector('figcaption');
+      const cv = f.querySelector('canvas'), im = f.querySelector('img');
+      lbImg.src = cv ? cv.dataset.src : (im ? im.src : '');
       lbCap.textContent = cap ? cap.textContent : '';
       lb.classList.add('open');
       document.body.style.overflow = 'hidden';
