@@ -44,6 +44,7 @@ function init() {
   say('You wake up in a cold room. Your head throbs. There is a <b>door</b> [locked], a flickering ink <b>terminal</b>, a dim <b>lamp</b>.', '');
   say('Hint: <b>read terminal</b> — you will rewrite reality in ink from there.', 'ok');
 }
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 function cmd(raw) {
   const t = ' ' + raw.toLowerCase() + ' ';
   say('&gt; ' + raw, 'echo');
@@ -124,9 +125,86 @@ form.onsubmit = e => { e.preventDefault(); const v = input.value.trim(); if (!v)
 document.querySelectorAll('.hint-row button').forEach(b => b.onclick = () => cmd(b.dataset.cmd));
 init();
 
-// calm reveal (opacity only, works without paint via rect fallback)
+// slow embers over the hero (calm drift, no flicker)
+(function embers() {
+  if (reducedMotion) return;
+  const cv = document.getElementById('embers');
+  const hero = document.querySelector('.hero');
+  if (!cv || !hero) return;
+  const ctx = cv.getContext('2d');
+  let W, H, parts = [];
+  const size = () => {
+    W = cv.width = hero.offsetWidth;
+    H = cv.height = hero.offsetHeight;
+    parts = Array.from({length: Math.min(46, Math.floor(W / 28))}, () => spawn(true));
+  };
+  const spawn = anywhere => ({
+    x: Math.random() * W,
+    y: anywhere ? Math.random() * H : H + 6,
+    r: .8 + Math.random() * 2.1,
+    vy: .12 + Math.random() * .3,
+    vx: (Math.random() - .5) * .12,
+    a: .12 + Math.random() * .3
+  });
+  size(); addEventListener('resize', size);
+  (function tick() {
+    if (!document.hidden) {
+      ctx.clearRect(0, 0, W, H);
+      for (const p of parts) {
+        p.y -= p.vy; p.x += p.vx;
+        if (p.y < -8) Object.assign(p, spawn(false));
+        ctx.globalAlpha = p.a;
+        ctx.fillStyle = '#ffb35c';
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 7); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+    requestAnimationFrame(tick);
+  })();
+})();
+
+// faint lamp-light following the cursor across the hero (fine pointers only)
+(function glow() {
+  if (reducedMotion || !matchMedia('(hover: hover)').matches) return;
+  const hero = document.querySelector('.hero'), lamp = document.querySelector('.hero-glow');
+  if (!hero || !lamp) return;
+  hero.addEventListener('mousemove', e => {
+    const b = hero.getBoundingClientRect();
+    lamp.style.transform = `translate(${e.clientX - b.left}px,${e.clientY - b.top}px)`;
+  });
+})();
+
+// tally numbers count up once, when scrolled into view
+(function tally() {
+  const nums = [...document.querySelectorAll('.tally [data-n]')];
+  if (!nums.length) return;
+  if (reducedMotion) return;
+  let done = false;
+  const run = () => {
+    if (done) return;
+    const t = document.querySelector('.tally').getBoundingClientRect();
+    if (t.top > innerHeight || t.bottom < 0) return;
+    done = true;
+    const t0 = performance.now();
+    (function step(now) {
+      const k = Math.min(1, (now - t0) / 1300);
+      nums.forEach(s => { s.textContent = Math.round(+s.dataset.n * (1 - Math.pow(1 - k, 3))); });
+      if (k < 1) requestAnimationFrame(step);
+    })(t0);
+  };
+  addEventListener('scroll', run, {passive: true});
+  setTimeout(run, 800);
+})();
 document.documentElement.classList.add('js');
-const RV = '.note-card,.gallery figure,.polaroid,.terminal-big,.cover-fig,.tally,details.faq';
+// reading progress hairline
+const prog = document.getElementById('progress');
+if (prog) addEventListener('scroll', () => {
+  const h = document.documentElement;
+  const k = h.scrollHeight - innerHeight;
+  prog.style.width = (k > 0 ? (scrollY / k * 100) : 0) + '%';
+}, {passive: true});
+
+const RV = '.note-card,.gallery figure,.polaroid,.terminal-big,.cover-fig,.tally,details.faq,.band p';
 const revealCheck = () => document.querySelectorAll('.rv:not(.in)').forEach(el => {
   const b = el.getBoundingClientRect();
   if (b.top < innerHeight * .92 && b.bottom > 0) el.classList.add('in');

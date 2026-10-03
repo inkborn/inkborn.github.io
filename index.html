@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>INKBORN — field notes from the Komplex</title>
+<title>Inkborn | Bending Reality</title>
 <meta name="description" content="INKBORN: you wake up in a rotting complex with an ink terminal. What you write becomes true. Unofficial field-note fan site.">
 <meta name="robots" content="noindex, noimageindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,6 +15,7 @@
 <body>
 
 <header class="nav">
+<div id="progress" aria-hidden="true"></div>
   <a href="#top" class="logo">INKBORN <span class="file-no">— file 07</span></a>
   <nav>
     <a href="#story">Notes</a>
@@ -38,12 +39,15 @@
 
 <main id="top">
 <section class="hero">
+  <canvas id="embers" aria-hidden="true"></canvas>
+  <div class="hero-glow" aria-hidden="true"></div>
   <div class="hero-inner">
     <div class="hero-left">
       <p class="kicker">Recovered notes · Inkborn Komplex · p.1</p>
-      <h1>INK<br>BORN<span class="seal">demo<br>live</span></h1>
+      <h1>INK<br>BORN<span class="seal">demo live</span></h1>
       <p class="hand-note">— whatever I write in ink, stays true. tested twice. don't test a third time.</p>
       <p class="lede">Woke up on cold tile. No windows. One terminal humming on a desk that shouldn't have power. I typed <i>“door open”</i> as a joke. The lock clicked.</p>
+      <p class="lede2">A cozy horror game about bending reality. Ink a sentence and the room obeys — getting out takes creativity and intuition: dig out its secrets, find the way out.</p>
       <div class="cta-row">
         <a class="stamp-btn big" href="https://www.dropbox.com/scl/fi/rg7896ynjh7wmetjl7yxy/Inkborn.zip?rlkey=l8kakzd2gh9qxym22zafy9ss2&st=nclzwet9&dl=1" download="Inkborn.zip">Play the demo free</a>
         <a class="ghost-btn" href="https://www.dropbox.com/scl/fi/rg7896ynjh7wmetjl7yxy/Inkborn.zip?rlkey=l8kakzd2gh9qxym22zafy9ss2&st=nclzwet9&dl=1" download="Inkborn.zip">Download →</a>
@@ -94,7 +98,7 @@
     </figure>
   </div>
   <p class="tagline">filed under: slow horror · pixel rooms · choices that stick · multiple endings · no combat, just nerves</p>
-  <div class="tally"><span>tally, week three —</span><b>rooms mapped 14</b><b>batteries kept 3</b><b>levers pulled 2</b><b>deaths 23</b><b>soap understood 0</b></div>
+  <div class="tally"><span>tally, week three —</span><b>rooms mapped <span data-n="14">14</span></b><b>batteries kept <span data-n="3">3</span></b><b>levers pulled <span data-n="2">2</span></b><b>deaths <span data-n="23">23</span></b><b>soap understood <span data-n="0">0</span></b></div>
 </section>
 
 <div class="band b1"><p><span class="pg">—</span> the long hall. the fridge hums. leave it humming.</p></div>
@@ -239,7 +243,7 @@
 </main>
 
 <footer>
-  <span>INKBORN — unofficial notes. All game rights belong to their owners. No ink was harmed.</span>
+  <span>INKBORN — Cozy Horror Game</span>
   <span><a href="#top">↑ top</a></span>
 </footer>
 
