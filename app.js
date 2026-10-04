@@ -315,6 +315,124 @@ addEventListener('scroll', () => {
   });
 }, {passive: true});
 
+// tiny terminal sounds (Web Audio, no files needed)
+let soundOn = true;
+try { soundOn = localStorage.getItem('inkborn-sound') !== '0'; } catch (e) {}
+let AC = null;
+const beep = (f, d, type, v) => {
+  if (!soundOn) return;
+  try {
+    AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+    if (AC.state === 'suspended') AC.resume();
+    const o = AC.createOscillator(), g = AC.createGain();
+    o.type = type || 'square'; o.frequency.value = f;
+    g.gain.setValueAtTime(v || .035, AC.currentTime);
+    g.gain.exponentialRampToValueAtTime(.0001, AC.currentTime + d);
+    o.connect(g); g.connect(AC.destination);
+    o.start(); o.stop(AC.currentTime + d);
+  } catch (e) {}
+};
+const NOTES = [220, 246.94, 261.63, 293.66, 329.63, 392, 440.0, 493.88, 523.25, 587.33, 659.25, 783.99];
+const toneFor = (el, salt) => {
+  let h = salt >>> 0;
+  const s = el.textContent || '';
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 997;
+  return NOTES[h % NOTES.length];
+};
+const wireSound = (sel, salt, clickFn) => {
+  document.querySelectorAll(sel).forEach(el => {
+    const f = toneFor(el, salt);
+    el.addEventListener('mouseenter', () => beep(f, .035));
+    el.addEventListener('click', clickFn ? () => clickFn(f) : () => { beep(f / 2, .06); setTimeout(() => beep(f, .07), 50); });
+  });
+};
+wireSound('a.stamp-btn, a.ghost-btn, #miniForm button, #gameForm button', 7);
+wireSound('.nav nav a, #mobileMenu a, footer a', 41);
+wireSound('.hint-row button', 131);
+wireSound('.gallery figure', 257, f => beep(f * 2, .05));
+wireSound('details.faq summary', 389, f => beep(f * 0.75, .06));
+wireSound('.check label', 521, f => { beep(f, .05); setTimeout(() => beep(f * 1.335, .06), 60); });
+// typewriter ticks while writing in either terminal
+['#gameInput', '#miniInput'].forEach(sel => {
+  const el = document.querySelector(sel);
+  if (el) el.addEventListener('keydown', () => beep(950 + Math.random() * 500, .025, 'square', .02));
+});
+// kompleks ambience: low drone + rain hiss + distant drips (starts on first touch)
+let ambOn = false, ambNodes = null;
+function startAmbience() {
+  if (ambOn || !soundOn) return;
+  try {
+    AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+    if (AC.state === 'suspended') AC.resume();
+    const master = AC.createGain();
+    master.gain.value = 0.0;
+    master.connect(AC.destination);
+    master.gain.linearRampToValueAtTime(0.05, AC.currentTime + 4);
+    const o1 = AC.createOscillator(), o2 = AC.createOscillator(), gg = AC.createGain();
+    o1.type = 'sine'; o2.type = 'triangle';
+    o1.frequency.value = 55; o2.frequency.value = 55.7;
+    gg.gain.value = 0.5;
+    const lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 220;
+    o1.connect(gg); o2.connect(gg); gg.connect(lp); lp.connect(master);
+    o1.start(); o2.start();
+    const len = AC.sampleRate * 2;
+    const buf = AC.createBuffer(1, len, AC.sampleRate);
+    const dd = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) dd[i] = Math.random() * 2 - 1;
+    const ns = AC.createBufferSource(); ns.buffer = buf; ns.loop = true;
+    const nf = AC.createBiquadFilter(); nf.type = 'lowpass'; nf.frequency.value = 480;
+    const ng = AC.createGain(); ng.gain.value = 0.05;
+    const lfo = AC.createOscillator(); lfo.frequency.value = 0.07;
+    const lg = AC.createGain(); lg.gain.value = 0.03;
+    lfo.connect(lg); lg.connect(ng.gain);
+    ns.connect(nf); nf.connect(ng); ng.connect(master);
+    ns.start(); lfo.start();
+    ambNodes = {master, stop() { try { o1.stop(); o2.stop(); ns.stop(); lfo.stop(); } catch (e) {} master.disconnect(); }};
+    ambOn = true;
+    (function drip() {
+      if (!ambOn) return;
+      setTimeout(() => {
+        if (ambOn && soundOn && !document.hidden) {
+          const f = [660, 587.33, 523.25, 440, 392][Math.floor(Math.random() * 5)];
+          const o = AC.createOscillator(), g2 = AC.createGain();
+          o.type = 'sine'; o.frequency.value = f;
+          g2.gain.setValueAtTime(0.02, AC.currentTime);
+          g2.gain.exponentialRampToValueAtTime(0.0001, AC.currentTime + 1.8);
+          o.connect(g2); g2.connect(AC.destination);
+          o.start(); o.stop(AC.currentTime + 1.9);
+        }
+        drip();
+      }, 7000 + Math.random() * 9000);
+    })();
+  } catch (e) {}
+}
+function stopAmbience() {
+  ambOn = false;
+  if (ambNodes && AC) {
+    try {
+      ambNodes.master.gain.linearRampToValueAtTime(0.0001, AC.currentTime + 0.5);
+      const n = ambNodes;
+      setTimeout(() => n.stop(), 650);
+    } catch (e) {}
+    ambNodes = null;
+  }
+}
+const kickAmbience = () => startAmbience();
+addEventListener('pointerdown', kickAmbience, {once: true});
+addEventListener('keydown', kickAmbience, {once: true});
+const sndBtn = document.createElement('button');
+sndBtn.className = 'snd-toggle';
+const paintSnd = () => { sndBtn.textContent = soundOn ? '♪ sound on' : '♪ sound off'; };
+sndBtn.onclick = () => {
+  soundOn = !soundOn;
+  try { localStorage.setItem('inkborn-sound', soundOn ? '1' : '0'); } catch (e) {}
+  if (!soundOn) stopAmbience(); else startAmbience();
+  paintSnd();
+  if (soundOn) beep(880, .04);
+};
+paintSnd();
+document.querySelector('footer').appendChild(sndBtn);
+
 const lb = document.getElementById('lightbox');
 if (lb) {
   const lbImg = lb.querySelector('img'), lbCap = lb.querySelector('.cap');
