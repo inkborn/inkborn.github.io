@@ -208,7 +208,7 @@ init();
 
 // faint lamp-light following the cursor across the hero (fine pointers only)
 (function glow() {
-  if (!matchMedia('(hover: hover)').matches) return;
+  if (!window.matchMedia || !matchMedia('(hover: hover)').matches) return;
   const hero = document.querySelector('.hero'), lamp = document.querySelector('.hero-glow');
   if (!hero || !lamp) return;
   hero.addEventListener('mousemove', e => {
@@ -421,6 +421,12 @@ function stopAmbience() {
 const kickAmbience = () => startAmbience();
 addEventListener('pointerdown', kickAmbience, {once: true});
 addEventListener('keydown', kickAmbience, {once: true});
+addEventListener('touchend', kickAmbience, {once: true});
+// browsers keep audio locked until a real tap: keep trying to unlock on every tap
+addEventListener('pointerdown', () => { try { if (AC && AC.state === 'suspended') AC.resume(); } catch (e) {} });
+document.querySelectorAll('a.stamp-btn, a.ghost-btn, .hint-row button').forEach(b => {
+  b.addEventListener('mouseenter', () => { try { if (AC && AC.state === 'suspended') AC.resume(); } catch (e) {} });
+});
 const sndBtn = document.createElement('button');
 sndBtn.className = 'snd-toggle';
 const paintSnd = () => { sndBtn.textContent = soundOn ? '♪ sound on' : '♪ sound off'; };
