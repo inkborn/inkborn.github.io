@@ -27,14 +27,15 @@ mobileMenu.querySelectorAll('a').forEach(a => a.onclick = () => mobileMenu.style
   el.textContent = (el.textContent + el.textContent).slice(0, 640);
   let x = 0, last = performance.now();
   const speed = 45;
-  setInterval(() => {
-    const now = performance.now();
+  const frame = now => {
     const dt = Math.min(100, now - last); last = now;
     const half = el.scrollWidth / 2;
     x -= speed * dt / 1000;
     if (half > 0 && x <= -half) x += half;
     el.style.transform = 'translateX(' + x + 'px)';
-  }, 50);
+    requestAnimationFrame(frame);
+  };
+  requestAnimationFrame(frame);
 })();
 
 // mini hero terminal
@@ -432,6 +433,35 @@ sndBtn.onclick = () => {
 };
 paintSnd();
 document.querySelector('footer').appendChild(sndBtn);
+
+// download links: assembled at runtime so view-source shows nothing to copy
+const DLP = [
+  'aHR0cHM6Ly93d3cuZHJvcGJveC5jb20vc2NsL2ZpL3JnNzg5Nnluamg3d21l',
+  'dGpsN3l4eS9Jbmtib3JuLnppcD9ybGtleT1sOGtha3pkMmdoOXF4eW0yMnph',
+  'Znk5c3MyJnN0PXJwdnZxemltJmRsPTE='
+];
+const dlUrl = () => { try { return atob(DLP.join('')); } catch (e) { return ''; } };
+document.querySelectorAll('a.dl').forEach(a => {
+  const arm = () => {
+    if (!a.getAttribute('href')) {
+      const u = dlUrl();
+      if (u) { a.setAttribute('href', u); a.setAttribute('download', 'Inkborn.zip'); }
+    }
+  };
+  a.addEventListener('pointerenter', arm);
+  a.addEventListener('focusin', arm);
+  a.addEventListener('click', e => {
+    const u = dlUrl();
+    if (!u) return;
+    if (!a.getAttribute('href')) { e.preventDefault(); location.href = u; }
+  });
+  a.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); a.click(); }
+  });
+  ['copy', 'cut'].forEach(ev => a.addEventListener(ev, e => e.preventDefault()));
+  a.addEventListener('dragstart', e => e.preventDefault());
+  a.addEventListener('contextmenu', e => e.preventDefault());
+});
 
 const lb = document.getElementById('lightbox');
 if (lb) {

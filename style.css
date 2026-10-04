@@ -30,6 +30,7 @@ section{scroll-margin-top:64px}
 .kicker{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12.5px;color:var(--fade);letter-spacing:.5px;margin:0}
 .hero h1{font-family:"Special Elite","Courier New",monospace;font-size:clamp(64px,11vw,128px);line-height:.9;margin:10px 0 0;letter-spacing:4px;color:#ece2cc;text-shadow:3px 3px 0 #000;animation:bleed 1.8s ease both}
 @keyframes bleed{from{opacity:0;filter:blur(10px);transform:translateY(12px)}to{opacity:1;filter:blur(0);transform:none}}
+.stamp-btn.dl{user-select:none;-webkit-user-select:none}
 #progress{position:absolute;top:0;left:0;height:3px;width:0;background:var(--blood);z-index:60}
 .hero-left>*{animation:rise .8s ease both}
 .hero-left>*:nth-child(1){animation-delay:.02s}
