@@ -371,8 +371,8 @@ function startAmbience() {
     const o1 = AC.createOscillator(), o2 = AC.createOscillator(), gg = AC.createGain();
     o1.type = 'sine'; o2.type = 'triangle';
     o1.frequency.value = 55; o2.frequency.value = 55.7;
-    gg.gain.value = 0.5;
-    const lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 220;
+    gg.gain.value = 0.18;
+    const lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 150;
     o1.connect(gg); o2.connect(gg); gg.connect(lp); lp.connect(master);
     o1.start(); o2.start();
     const len = AC.sampleRate * 2;
