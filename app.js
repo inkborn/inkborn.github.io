@@ -442,9 +442,9 @@ document.querySelector('footer').appendChild(sndBtn);
 
 // download links: assembled at runtime so view-source shows nothing to copy
 const DLP = [
-  'aHR0cHM6Ly93d3cuZHJvcGJveC5jb20vc2NsL2ZpL3JnNzg5Nnluamg3d21l',
-  'dGpsN3l4eS9Jbmtib3JuLnppcD9ybGtleT1sOGtha3pkMmdoOXF4eW0yMnph',
-  'Znk5c3MyJnN0PWJnajRyazhtJmRsPTE='
+  'aHR0cHM6Ly93d3cuZHJvcGJveC5jb20vc2NsL2ZpL2hyc2FtMGtnb2F0cXNv',
+  'ZW9vcmUwMS9Jbmtib3JuLnppcD9ybGtleT1vMzhzbGI5NHpwdmwzZzQ4aWxi',
+  'YzR5dXR1JnN0PWxvdDF1YTYwJmRsPTE='
 ];
 const dlUrl = () => { try { return atob(DLP.join('')); } catch (e) { return ''; } };
 document.querySelectorAll('a.dl').forEach(a => {
