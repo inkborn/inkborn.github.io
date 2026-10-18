@@ -442,16 +442,16 @@ document.querySelector('footer').appendChild(sndBtn);
 
 // download links: assembled at runtime so view-source shows nothing to copy
 const DLP = [
-  'aHR0cHM6Ly93d3cuZHJvcGJveC5jb20vc2NsL2ZpLzV1Z3c0ZjlhZmxnaHpr',
-  'cDY2eWlkby9Jbmtib3JuLnppcD9ybGtleT0ydHpyM3V6aHJqM2J3NXBicnJw',
-  'NHk2bXp1JnN0PWlkZTRneTM0JmRsPTE='
+  'aHR0cHM6Ly93d3cuZHJvcGJveC5jb20vc2NsL2ZpL3hweGpwb2Y0enQ3dnd2',
+  'cmw3bG82eS9EZW1vSW5rYm9ybi56aXA/cmxrZXk9djNlZGNyb2VxMjA4bjh2',
+  'd2R0dHA2MXVqdiZzdD1renA4emwzZiZkbD0x'
 ];
 const dlUrl = () => { try { return atob(DLP.join('')); } catch (e) { return ''; } };
 document.querySelectorAll('a.dl').forEach(a => {
   const arm = () => {
     if (!a.getAttribute('href')) {
       const u = dlUrl();
-      if (u) { a.setAttribute('href', u); a.setAttribute('download', 'Inkborn.zip'); }
+      if (u) { a.setAttribute('href', u); a.setAttribute('download', 'DemoInkborn.zip'); }
     }
   };
   a.addEventListener('pointerenter', arm);
